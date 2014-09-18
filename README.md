@@ -45,7 +45,7 @@ Adding a new Leaf to your node is really easy. Just create a new node and attach
 	var parent = tree.createNode(dataParent);
 	var leaf = tree.createNode(dataChild);
 	var options = {
-		branch : "right"
+		branch : "right" //or "left"
 	};
 	parent.addLeaf(leaf, options);
 ```
@@ -58,7 +58,7 @@ Adding a Parent to a node is just as simple as adding a new Leaf. You have to us
 	var parent = tree.createNode(dataParent);
 	var leaf = tree.createNode(dataChild);
 	var options = {
-		branch : "right"
+		branch : "right" //or "left"
 	};
 	leaf.addParent(parent, options);
 ```
@@ -81,7 +81,7 @@ This method will give you an array with every leaf of your tree.
 
 ```javascript
 	var parents = tree.getAllParents();
-``	
+```	
 
 This method will give you an array with every parent of your tree.
 
