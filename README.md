@@ -73,7 +73,7 @@ The tree object gives you a few useful methods to handle your tree.
 
 ```javascript
 	var leaves = tree.getAllLeaves();
-``	
+```	
 
 This method will give you an array with every leaf of your tree.
 
