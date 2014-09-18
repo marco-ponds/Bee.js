@@ -1,10 +1,10 @@
 
-try {
 /*
-	ROOT.JS
+	BEE.JS
 	Marco Stagni.
 */
 //default config
+
 /******************************
 	TREE Class
 ******************************/
@@ -30,8 +30,10 @@ Tree.NO_MORE_CHILDREN = "No more children allowed for this node.";
 Tree.NO_MORE_PARENTS = "This node already have a parent.";
 
 Tree.ERROR_NO_LEAVES = "Sorry, something wrong in your tree. There are no leaves :(";
-Tree.ERROR_NO_PARENTS = "Sorry, something wrong in your tree. There are no leaves :(";	
+Tree.ERROR_NO_PARENTS = "Sorry, something wrong in your tree. There are no leaves :(";
 Tree.ERROR_STRANGE_ROOTS = "Sorry, something wrong in your tree. Strange number of root nodes";
+Tree.ERROR_ALREADY_LEFT = "Sorry, this node already have a left branch.";
+Tree.ERROR_ALREADY_RIGHT = "Sorry, this node already have a right branch.";
 
 //creating a new node from tree
 //node can store almost everything
@@ -119,23 +121,7 @@ Tree.prototype.getPath = function(leaf, root) {
 		l = p;
 		p = p.parent;
 	}
-	//console.log(_toReturn);
 	return _toReturn.reverse(); //path must be from root to leaf
-};
-
-//recursive function to return path to leaf
-Tree.prototype._getPath = function(leaf, node, weight, array) {
-	if (!node) return; //if undefined, we return
-	array.push({
-		n : node, 
-		w : weight
-	});
-	if (node._isLeaf && (node._id == leaf._id)) {
-		
-	} else {
-		this._getPath(leaf, node.leftBranch, node.leftWeight, array);
-		this._getPath(leaf, node.rightBranch, node.rightWeight, array);
-	}
 };
 
 /*
@@ -266,11 +252,20 @@ Node.prototype.addLeaf = function(node,options) {
 	//adding branch to this node
 	//Settting weight
 	if (options.branch == "left") {
-		this.leftBranch = node;
-		this.leftWeight = options.weights.l;
+		if (!this.leftBranch) {
+			// i can add a new leaf only if there aren't old leaves.
+			this.leftBranch = node;
+			this.leftWeight = options.weights.l;	
+		} else {
+			throw Tree.ERROR_ALREADY_LEFT;
+		}
 	} else if (options.branch == "right") {
-		this.rightBranch = node;
-		this.rightWeight = options.weights.r;
+		if (!this.rightBranch) {
+			this.rightBranch = node;
+			this.rightWeight = options.weights.r;
+		} else {
+			throw Tree.ERROR_ALREADY_RIGHT;
+		}
 	} else {
 		throw Tree.VALID_BRANCH;
 	}
@@ -306,4 +301,3 @@ Node.prototype.addParent = function(node, options) {
 	//if we are here, we are allowed to proceed
 	node.addLeaf(this, options);
 };
-} catch (e) { console.log(e);}
