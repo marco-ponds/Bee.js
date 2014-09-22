@@ -187,6 +187,19 @@ Tree.prototype.orderedHas = function(node, compare, strategy) {
 
 }
 
+//method to get tree height
+Tree.prototype.height = function() {
+	var h = _height(this.getRootNode());
+	return h;
+}
+
+function height(root) {
+   if(!root)
+       return 0;
+   return 1+ Math.max(height(root.leftBranch), height(root.rightBranch));
+}
+
+
 /******************************
 	Node Class
 ******************************/
