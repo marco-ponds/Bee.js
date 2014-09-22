@@ -21,7 +21,7 @@ BEE.version = '0.0.9';
 BEE.authors = [{
 	name : "Marco Stagni",
 	website : "http://marcostagni.com"
-}]
+}];
 
 //static values
 BEE.MAX_CHILDREN_COUNT = 2; //every node must have max 2 children
@@ -85,7 +85,7 @@ BEE.prototype.getAllLeaves = function() {
 
 //returning root node
 BEE.prototype.getRootNode = function() {
-	var _toReturn = []
+	var _toReturn = [];
 	for (var i in this.nodes) {
 		if (this.nodes[i]._isRoot) {
 			_toReturn.push(this.nodes[i]);
@@ -139,6 +139,10 @@ BEE.prototype.getPath = function(leaf, root) {
 /*
 	strategy : "LTR/ltr" //left to right
 	strategy : "RTL/rtl" //right to left
+
+	compare : function (dataA, dataB) {
+		return dataA.param == dataB.param;
+	}
 */
 
 BEE.prototype.has = function(node, compare, strategy) {
@@ -166,7 +170,7 @@ function _hasLTR(node, tree, compare) {
 	if (!tree) return false;
 	else {
 		if (compare(node.data, tree.data)){
-			return true; 
+			return true;
 		}
 		else{
 			return (_hasLTR(e,tree.leftBranch) || _hasLTR(e,tree.rightBranch));
@@ -177,7 +181,7 @@ function _hasLTR(node, tree, compare) {
 function _hasRTL(node, tree, compare) {
 	if (!tree) return false;
 	else {
-		if (compare(node, tree)){
+		if (compare(node.data, tree.data)){
 			return true; 
 		}
 		else{
@@ -188,25 +192,94 @@ function _hasRTL(node, tree, compare) {
 
 //in case we have a ordered binary tree, we need to use orderedHas
 /*
-	compare function must implement a comparing syste
-*/
-BEE.prototype.orderedHas = function(node, compare, strategy) {
+	compare function must implement a comparing system
+	must be a function which checks if node A and node B are equals.
 
+	compare : function(a,b) {
+		if (a<b) return -1;
+		if (a>b) return 1;
+		else return 0;
+	}
+*/
+BEE.prototype.orderedHas = function(node, compare) {
+	return _orderedIns(node, this.getRootNode(), compare);
+};
+
+function _orderedHas(node, root, compare) {
+	if (!root) {
+		return false;
+	} else {
+		if (compare(node.data, root.data) == 0) return true;
+		else if (compare(node.data, root.data) < 0) {
+			return _orderedHas(node, root.leftBranch);
+		} else {
+			return _orderedHas(node, root.rightBranch);
+		}
+	}
 }
 
 //method to get BEE height
 BEE.prototype.height = function() {
 	var h = _height(this.getRootNode());
 	return h;
-}
+};
 
 function height(root) {
    if(!root)
        return 0;
-   return 1+ Math.max(height(root.leftBranch), height(root.rightBranch));
+   return 1+ Math.max(_height(root.leftBranch), _height(root.rightBranch));
 }
 
 
+/*
+	BINARY TREES ORDERED INSERT
+*/
+
+//ordered insert inside tree
+/*
+	you need to provide a valid compare function
+	compare : function(a,b) {
+		if (a<b) return -1;
+		if (a>b) return 1;
+		else return 0;
+	}
+*/
+BEE.prototype.orderedIns = function(node, compare) {
+	try {	
+		_orderedIns(node, this.getRootNode(), compare);
+	} catch (e) {
+		console.log("Something bad happened in ordIns");
+		return false;
+	}
+};
+
+function _orderedIns(node, root, compare) {
+	if (!root) {
+		return buildNode(data,undefined,undefined);
+	} else {
+		if ((compare(node.data, root.data) < 0) || (compare(node.data, root.data) == 0)) {
+			root.leftBranch = _orderedIns(node, root.leftBranch);
+		} else {
+			root.rightBranch = _orderedIns(node, root.rightBranch);
+		}
+	}
+	return root;
+}
+
+function buildNode(data, left, right) {
+	var node = this.createNode(data);
+	node.addLeaf(left, {branch:"left"});
+	node.addLeaf(right, {branch:"right"});
+	return node;
+}
+
+BEE.prototype.buildNode = function (data, left, right) {
+	//building a new node with left and right branch 
+	var node = this.createNode(data);
+	node.addLeaf(left, {branch:"left"});
+	node.addLeaf(right, {branch:"right"});
+	return node;
+};
 /******************************
 	Node Class
 ******************************/
@@ -332,7 +405,7 @@ Node.prototype.addLeaf = function(node,options) {
 		if (!this.leftBranch) {
 			// i can add a new leaf only if there aren't old leaves.
 			this.leftBranch = node;
-			this.leftWeight = options.weights.l ? options.weights.l : 0;	
+			this.leftWeight = options.weights.l ? options.weights.l : 0;
 		} else {
 			throw BEE.ERROR_ALREADY_LEFT;
 		}
@@ -352,7 +425,7 @@ Node.prototype.addLeaf = function(node,options) {
 	node.parent = this;
 	node.parents = 1; 
 	//updating node status
-	this.update();	
+	this.update();
 	node.update();
 };
 
