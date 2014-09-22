@@ -5,6 +5,8 @@ BEE stands for Binary trEE. This is just a small library to help you handling Bi
 
 Bee.js is available both in unminified (~7Kb) and minified version (~5Kb).
 
+current version : 0.1
+
 ####USAGE
 
 First thing first, include Bee.js in your html page. Pretty easy.

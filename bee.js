@@ -17,7 +17,7 @@ function BEE() {
 }
 
 //lib info
-BEE.version = '0.0.9';
+BEE.version = '0.1';
 BEE.authors = [{
 	name : "Marco Stagni",
 	website : "http://marcostagni.com"
@@ -132,6 +132,53 @@ BEE.prototype.getPath = function(leaf, root) {
 	}
 	return _toReturn.reverse(); //path must be from root to leaf
 };
+
+//printing the whole tree
+/*
+	must specify strategy
+	strategy : "post", "pre", "default"
+*/
+
+BEE.prototype.each = function (callback, strategy) {
+	//callback method will be called for each element
+	var count = 0;
+	if (!(typeof callback == "function")) {
+		throw BEE.BAD_ARGUMENTS;
+	}	if (strategy == "post") {
+		_postEach(callback, count, this.getRootNode());
+	} else if (strategy == "pre") {
+		_preEach(callback, count, this.getRootNode());
+	} else {
+		_defEach(callback, count, this.getRootNode());
+	}
+};
+
+function _preEach (callback, count, node) {
+	if (!node) {
+		count++;
+		callback(count, node);
+		_preEach(callback, count, node.leftBranch);
+		_preEach(callback, count, node.rightBranch);
+	}
+}
+
+function _postEach (callback, count, node) {
+	if (!node) {
+		_postEach(callback, count, node.leftBranch);
+		_postEach(callback, count, node.rightBranch);
+		count++;
+		callback(count, node);
+	}
+}
+
+function _defEach (callback, count, node) {
+	if (!node) {
+		_defEach(callback, count, node.leftBranch);
+		count++;
+		callback(count, node);
+		_defEach(callback, count, node.rightBranch);
+	}
+}
 
 //check if node is member of the selected BEE
 //we need a compare method to
