@@ -8,7 +8,7 @@
 /******************************
 	TREE Class
 ******************************/
-function Tree() {
+function BEE() {
 	this.options = undefined;
 	this.nodes = [];
 	this.size = 0;
@@ -16,28 +16,35 @@ function Tree() {
 	this._idPool = [];
 }
 
+//lib info
+BEE.version = '0.0.9';
+BEE.authors = [{
+	name : "Marco Stagni",
+	website : "http://marcostagni.com"
+}]
+
 //static values
-Tree.MAX_CHILDREN_COUNT = 2; //every node must have max 2 children
-Tree.MAX_PARENTS_COUNT = 1; //every node must have max 1 parent
-Tree.MAX_ID_SIZE = 12; //max size of id string.
-Tree.MAX_ROOT_NUMBER = 1; //max one root per tree.
+BEE.MAX_CHILDREN_COUNT = 2; //every node must have max 2 children
+BEE.MAX_PARENTS_COUNT = 1; //every node must have max 1 parent
+BEE.MAX_ID_SIZE = 12; //max size of id string.
+BEE.MAX_ROOT_NUMBER = 1; //max one root per BEE.
 
 //error messages
-Tree.VALID_TREE = "Please use a valid Tree object.";
-Tree.UNTOUCHABLE = "Untouchable value. Get away.";
-Tree.VALID_BRANCH = "Please specify a valid branch.";
-Tree.NO_MORE_CHILDREN = "No more children allowed for this node.";
-Tree.NO_MORE_PARENTS = "This node already have a parent.";
+BEE.VALID_BEE = "Please use a valid BEE object.";
+BEE.UNTOUCHABLE = "Untouchable value. Get away.";
+BEE.VALID_BRANCH = "Please specify a valid branch.";
+BEE.NO_MORE_CHILDREN = "No more children allowed for this node.";
+BEE.NO_MORE_PARENTS = "This node already have a parent.";
 
-Tree.ERROR_NO_LEAVES = "Sorry, something wrong in your tree. There are no leaves :(";
-Tree.ERROR_NO_PARENTS = "Sorry, something wrong in your tree. There are no leaves :(";
-Tree.ERROR_STRANGE_ROOTS = "Sorry, something wrong in your tree. Strange number of root nodes";
-Tree.ERROR_ALREADY_LEFT = "Sorry, this node already have a left branch.";
-Tree.ERROR_ALREADY_RIGHT = "Sorry, this node already have a right branch.";
+BEE.ERROR_NO_LEAVES = "Sorry, something wrong in your BEE. There are no leaves :(";
+BEE.ERROR_NO_PARENTS = "Sorry, something wrong in your BEE. There are no leaves :(";
+BEE.ERROR_STRANGE_ROOTS = "Sorry, something wrong in your BEE. Strange number of root nodes";
+BEE.ERROR_ALREADY_LEFT = "Sorry, this node already have a left branch.";
+BEE.ERROR_ALREADY_RIGHT = "Sorry, this node already have a right branch.";
 
-Tree.BAD_ARGUMENTS = "BAD ARGUMENTS, please check them.";
+BEE.BAD_ARGUMENTS = "BAD ARGUMENTS, please check them.";
 
-//creating a new node from tree
+//creating a new node from BEE
 //node can store almost everything
 /*
 	value = {
@@ -54,7 +61,7 @@ Tree.BAD_ARGUMENTS = "BAD ARGUMENTS, please check them.";
 
 	the value object will be stored in "data" field of your node.
 */
-Tree.prototype.createNode = function(value) {
+BEE.prototype.createNode = function(value) {
 	var a = new Node({
 		tree : this,
 		data : value,
@@ -63,7 +70,7 @@ Tree.prototype.createNode = function(value) {
 };
 
 //returning all leaves
-Tree.prototype.getAllLeaves = function() {
+BEE.prototype.getAllLeaves = function() {
 	var _toReturn = [];
 	for (var i in this.nodes) {
 		if (this.nodes[i]._isLeaf) {
@@ -71,13 +78,13 @@ Tree.prototype.getAllLeaves = function() {
 		}
 	}
 	if (_toReturn.length == 0) {
-		throw Tree.ERROR_NO_LEAVES;
+		throw BEE.ERROR_NO_LEAVES;
 	}
 	return _toReturn;
 };
 
 //returning root node
-Tree.prototype.getRootNode = function() {
+BEE.prototype.getRootNode = function() {
 	var _toReturn = []
 	for (var i in this.nodes) {
 		if (this.nodes[i]._isRoot) {
@@ -85,13 +92,13 @@ Tree.prototype.getRootNode = function() {
 		}
 	}
 	if (_toReturn.length != 1) {
-		throw Tree.ERROR_STRANGE_ROOTS;
+		throw BEE.ERROR_STRANGE_ROOTS;
 	}
 	return _toReturn[0];
 };
 
 //returning all parents
-Tree.prototype.getAllParents = function() {
+BEE.prototype.getAllParents = function() {
 	var _toReturn = [];
 	for (var i in this.nodes) {
 		if (this.nodes[i]._isParent) {
@@ -99,13 +106,13 @@ Tree.prototype.getAllParents = function() {
 		}
 	}
 	if (_toReturn.length == 0) {
-		throw Tree.ERROR_NO_PARENTS;
+		throw BEE.ERROR_NO_PARENTS;
 	}
 	return _toReturn;
 };
 
 //returning path to a single leaf
-Tree.prototype.getPath = function(leaf, root) {
+BEE.prototype.getPath = function(leaf, root) {
 	var _toReturn = [], p, l;
 	//this._getPath(leaf, root, root.leftWeight, _toReturn);
 	_toReturn.push({
@@ -126,18 +133,18 @@ Tree.prototype.getPath = function(leaf, root) {
 	return _toReturn.reverse(); //path must be from root to leaf
 };
 
-//check if node is member of the selected tree
+//check if node is member of the selected BEE
 //we need a compare method to
-//strategy means the order of tree parsing
+//strategy means the order of BEE parsing
 /*
 	strategy : "LTR/ltr" //left to right
 	strategy : "RTL/rtl" //right to left
 */
 
-Tree.prototype.has = function(node, compare, strategy) {
+BEE.prototype.has = function(node, compare, strategy) {
 	//calling inner _has for recursive call
 	if (!(typeof compare == "function")) {
-		throw Tree.BAD_ARGUMENTS;
+		throw BEE.BAD_ARGUMENTS;
 	}
 	var flag;
 	if (!strategy) {
@@ -149,7 +156,7 @@ Tree.prototype.has = function(node, compare, strategy) {
 		} else if (_s == "rtl") {
 			flag = _hasRTL(node, this.getRootNode(), compare);
 		} else {
-			throw Tree.BAD_ARGUMENTS;
+			throw BEE.BAD_ARGUMENTS;
 		}
 	}
 	return flag;
@@ -183,12 +190,12 @@ function _hasRTL(node, tree, compare) {
 /*
 	compare function must implement a comparing syste
 */
-Tree.prototype.orderedHas = function(node, compare, strategy) {
+BEE.prototype.orderedHas = function(node, compare, strategy) {
 
 }
 
-//method to get tree height
-Tree.prototype.height = function() {
+//method to get BEE height
+BEE.prototype.height = function() {
 	var h = _height(this.getRootNode());
 	return h;
 }
@@ -205,23 +212,23 @@ function height(root) {
 ******************************/
 //constructor
 function Node(options) {
-	//checking if options.tree is a valid Tree object.
-	if (options.tree && options.tree instanceof Tree) {
+	//checking if options.BEE is a valid BEE object.
+	if (options.tree && options.tree instanceof BEE) {
 		this.tree = options.tree;
 	} else {
-		throw Tree.VALID_TREE;
+		throw BEE.VALID_BEE;
 	}
 	//creating a valid id
-	var tmp = Math.random().toString(Tree.MAX_ID_SIZE).slice(2);
+	var tmp = Math.random().toString(BEE.MAX_ID_SIZE).slice(2);
 	while (this.tree._idPool.indexOf(tmp) > -1) {
-		tmp = Math.random().toString(Tree.MAX_ID_SIZE).slice(2);
+		tmp = Math.random().toString(BEE.MAX_ID_SIZE).slice(2);
 	}
 	this.tree._idPool.push(tmp);
 	this._id = tmp;
 	//setting _id property as untouchable
 	Object.defineProperty(this, "_id", {
 		set : function() {
-			throw Tree.UNTOUCHABLE;
+			throw BEE.UNTOUCHABLE;
 		},
 		get : function() {
 			return tmp;
@@ -313,13 +320,13 @@ Node.prototype.update = function() {
 	}
 */
 Node.prototype.addLeaf = function(node,options) {
-	if (this.children+1 > Tree.MAX_CHILDREN_COUNT) {
-		throw Tree.NO_MORE_CHILDREN;
+	if (this.children+1 > BEE.MAX_CHILDREN_COUNT) {
+		throw BEE.NO_MORE_CHILDREN;
 	} 
 	//adding branch to this node
 	//Settting weight
 	if (!options.branch) {
-		throw Tree.BAD_ARGUMENTS;
+		throw BEE.BAD_ARGUMENTS;
 	}
 	if (options.branch == "left") {
 		if (!this.leftBranch) {
@@ -327,17 +334,17 @@ Node.prototype.addLeaf = function(node,options) {
 			this.leftBranch = node;
 			this.leftWeight = options.weights.l ? options.weights.l : 0;	
 		} else {
-			throw Tree.ERROR_ALREADY_LEFT;
+			throw BEE.ERROR_ALREADY_LEFT;
 		}
 	} else if (options.branch == "right") {
 		if (!this.rightBranch) {
 			this.rightBranch = node;
 			this.rightWeight = options.weights.r ? options.weights.r : 1;
 		} else {
-			throw Tree.ERROR_ALREADY_RIGHT;
+			throw BEE.ERROR_ALREADY_RIGHT;
 		}
 	} else {
-		throw Tree.VALID_BRANCH;
+		throw BEE.VALID_BRANCH;
 	}
 
 	//increasing children count
@@ -361,12 +368,12 @@ Node.prototype.addLeaf = function(node,options) {
 */
 
 Node.prototype.addParent = function(node, options) {
-	if (this.parents+1 > Tree.MAX_PARENTS_COUNT) {
-		throw Tree.NO_MORE_PARENTS;
+	if (this.parents+1 > BEE.MAX_PARENTS_COUNT) {
+		throw BEE.NO_MORE_PARENTS;
 	}
 	//checking if node can be our parent
-	if (node.children+1 > Tree.MAX_CHILDREN_COUNT) {
-		throw Tree.NO_MORE_CHILDREN;
+	if (node.children+1 > BEE.MAX_CHILDREN_COUNT) {
+		throw BEE.NO_MORE_CHILDREN;
 	}
 	//if we are here, we are allowed to proceed
 	node.addLeaf(this, options);
