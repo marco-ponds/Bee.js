@@ -35,6 +35,8 @@ Tree.ERROR_STRANGE_ROOTS = "Sorry, something wrong in your tree. Strange number 
 Tree.ERROR_ALREADY_LEFT = "Sorry, this node already have a left branch.";
 Tree.ERROR_ALREADY_RIGHT = "Sorry, this node already have a right branch.";
 
+Tree.BAD_ARGUMENTS = "BAD ARGUMENTS, please check them.";
+
 //creating a new node from tree
 //node can store almost everything
 /*
@@ -124,14 +126,66 @@ Tree.prototype.getPath = function(leaf, root) {
 	return _toReturn.reverse(); //path must be from root to leaf
 };
 
+//check if node is member of the selected tree
+//we need a compare method to
+//strategy means the order of tree parsing
 /*
-boolean member_ord(element e, tree t) {
-	if (empty(t)) return false;
-	else if (iEqual(e, root(t))s) return true
-		else if (isLess(e,root(t))) return member_ord(e, left(t))
-			else return member_ord(e, right(t))
-}
+	strategy : "LTR/ltr" //left to right
+	strategy : "RTL/rtl" //right to left
 */
+
+Tree.prototype.has = function(node, compare, strategy) {
+	//calling inner _has for recursive call
+	if (!(typeof compare == "function")) {
+		throw Tree.BAD_ARGUMENTS;
+	}
+	var flag;
+	if (!strategy) {
+		flag = _hasLTR(node, this.getRootNode(), compare);
+	} else {
+		_s = strategy.toLowerCase();
+		if (_s == "ltr") {
+			flag = _hasLTR(node, this.getRootNode(), compare);
+		} else if (_s == "rtl") {
+			flag = _hasRTL(node, this.getRootNode(), compare);
+		} else {
+			throw Tree.BAD_ARGUMENTS;
+		}
+	}
+	return flag;
+};
+
+function _hasLTR(node, tree, compare) {
+	if (!tree) return false;
+	else {
+		if (compare(node.data, tree.data)){
+			return true; 
+		}
+		else{
+			return (_hasLTR(e,tree.leftBranch) || _hasLTR(e,tree.rightBranch));
+		}
+	}
+}
+
+function _hasRTL(node, tree, compare) {
+	if (!tree) return false;
+	else {
+		if (compare(node, tree)){
+			return true; 
+		}
+		else{
+			return (_hasRTL(e,tree.rightBranch) || _hasRTL(e,tree.leftBranch));
+		}
+	}
+}
+
+//in case we have a ordered binary tree, we need to use orderedHas
+/*
+	compare function must implement a comparing syste
+*/
+Tree.prototype.orderedHas = function(node, compare, strategy) {
+
+}
 
 /******************************
 	Node Class
@@ -251,18 +305,21 @@ Node.prototype.addLeaf = function(node,options) {
 	} 
 	//adding branch to this node
 	//Settting weight
+	if (!options.branch) {
+		throw Tree.BAD_ARGUMENTS;
+	}
 	if (options.branch == "left") {
 		if (!this.leftBranch) {
 			// i can add a new leaf only if there aren't old leaves.
 			this.leftBranch = node;
-			this.leftWeight = options.weights.l;	
+			this.leftWeight = options.weights.l ? options.weights.l : 0;	
 		} else {
 			throw Tree.ERROR_ALREADY_LEFT;
 		}
 	} else if (options.branch == "right") {
 		if (!this.rightBranch) {
 			this.rightBranch = node;
-			this.rightWeight = options.weights.r;
+			this.rightWeight = options.weights.r ? options.weights.r : 1;
 		} else {
 			throw Tree.ERROR_ALREADY_RIGHT;
 		}
