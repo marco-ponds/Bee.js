@@ -154,28 +154,28 @@ BEE.prototype.each = function (callback, strategy) {
 };
 
 function _preEach (callback, count, node) {
-	if (!node) {
-		count++;
-		callback(count, node);
+	if (node) {
+		var c = count+1;
+		callback(node, c);
 		_preEach(callback, count, node.leftBranch);
 		_preEach(callback, count, node.rightBranch);
 	}
 }
 
 function _postEach (callback, count, node) {
-	if (!node) {
+	if (node) {
 		_postEach(callback, count, node.leftBranch);
 		_postEach(callback, count, node.rightBranch);
-		count++;
-		callback(count, node);
+		var c = count+1;
+		callback(node, c);
 	}
 }
 
 function _defEach (callback, count, node) {
-	if (!node) {
+	if (node) {
 		_defEach(callback, count, node.leftBranch);
-		count++;
-		callback(count, node);
+		var c = count+1;
+		callback(node, c);
 		_defEach(callback, count, node.rightBranch);
 	}
 }
@@ -452,14 +452,22 @@ Node.prototype.addLeaf = function(node,options) {
 		if (!this.leftBranch) {
 			// i can add a new leaf only if there aren't old leaves.
 			this.leftBranch = node;
-			this.leftWeight = options.weights.l ? options.weights.l : 0;
+			if (!options.weights) {
+				this.leftWeight = 0;
+			} else {
+				this.leftWeight = options.weights.l ? options.weights.l : 0;
+			}
 		} else {
 			throw BEE.ERROR_ALREADY_LEFT;
 		}
 	} else if (options.branch == "right") {
 		if (!this.rightBranch) {
 			this.rightBranch = node;
-			this.rightWeight = options.weights.r ? options.weights.r : 1;
+			if (!options.weights) {
+				this.rightWeight = 1;
+			} else {
+				this.rightWeight = options.weights.r ? options.weights.r : 1;
+			}
 		} else {
 			throw BEE.ERROR_ALREADY_RIGHT;
 		}
